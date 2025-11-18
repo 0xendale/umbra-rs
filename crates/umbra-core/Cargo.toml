@@ -1,0 +1,12 @@
+[package]
+name = "umbra-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+curve25519-dalek = { version = "4.1.3", features = ["rand_core"] }
+rand_core = { version = "0.6", features = ["getrandom"] }
+sha2 = "0.10"
+serde = { version = "1", features = ["derive"] }
+thiserror = "2.0.17"
+zeroize = { version = "1", features = ["zeroize_derive"] }  # add for secret wiping (optional but recommended)
