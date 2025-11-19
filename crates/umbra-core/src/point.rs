@@ -1,22 +1,33 @@
 use curve25519_dalek::edwards::{CompressedEdwardsY, EdwardsPoint};
-use serde::de::Error as DeError;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::de::Error as DeError;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PointWrapper(pub EdwardsPoint);
 
-// ---------- Serialize ----------
+impl PointWrapper {
+    /// Serialize to 32-byte compressed Edwards-Y representation.
+    pub fn to_bytes(self) -> [u8; 32] {
+        self.0.compress().to_bytes()
+    }
+
+    /// Construct from 32-byte compressed Edwards-Y representation.
+    ///
+    /// Returns `None` if the bytes do not represent a valid curve point.
+    pub fn from_bytes(bytes: [u8; 32]) -> Option<Self> {
+        CompressedEdwardsY(bytes).decompress().map(PointWrapper)
+    }
+}
+
 impl Serialize for PointWrapper {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let bytes = self.0.compress().to_bytes();
-        serializer.serialize_bytes(&bytes)
+        serializer.serialize_bytes(&self.to_bytes())
     }
 }
 
-// ---------- Deserialize ----------
 impl<'de> Deserialize<'de> for PointWrapper {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -24,23 +35,13 @@ impl<'de> Deserialize<'de> for PointWrapper {
     {
         let bytes: &[u8] = Deserialize::deserialize(deserializer)?;
         if bytes.len() != 32 {
-            return Err(D::Error::custom("invalid point length"));
+            return Err(DeError::custom("PointWrapper expects 32 bytes"));
         }
 
-        let mut arr = [0u8; 32];
-        arr.copy_from_slice(bytes);
+        let mut buf = [0u8; 32];
+        buf.copy_from_slice(bytes);
 
-        let compressed = CompressedEdwardsY(arr);
-        match compressed.decompress() {
-            Some(point) => Ok(PointWrapper(point)),
-            None => Err(D::Error::custom("invalid edwards point")),
-        }
-    }
-}
-
-// ---------- Utility ----------
-impl PointWrapper {
-    pub fn to_bytes(&self) -> [u8; 32] {
-        self.0.compress().to_bytes()
+        PointWrapper::from_bytes(buf)
+            .ok_or_else(|| DeError::custom("invalid Edwards point"))
     }
 }

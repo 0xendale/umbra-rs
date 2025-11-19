@@ -1,0 +1,77 @@
+use thiserror::Error;
+use umbra_core::PointWrapper;
+
+use crate::types::UmbraMemo;
+
+/// 4-byte prefix used to identify Umbra memos.
+///
+/// Public part of the protocol specification.
+/// Do not change without a migration plan.
+pub const UMBRA_MEMO_MAGIC: &[u8; 4] = b"UMBR";
+
+/// Umbra memo format version.
+///
+/// Placed immediately after the magic header.
+pub const UMBRA_MEMO_VERSION: u8 = 1;
+
+/// Errors that may occur while decoding Umbra memo payloads.
+#[derive(Debug, Error)]
+pub enum MemoDecodeError {
+    #[error("memo too short: expected at least {expected} bytes, got {actual}")]
+    TooShort { expected: usize, actual: usize },
+
+    #[error("invalid magic header: not an Umbra memo")]
+    InvalidMagic,
+
+    #[error("unsupported memo version: {0}")]
+    UnsupportedVersion(u8),
+
+    #[error("ephemeral pubkey bytes are invalid")]
+    InvalidEphemeralPubkey,
+}
+
+/// Decode raw memo bytes into an `UmbraMemo`.
+///
+/// Expected layout (version 1):
+///
+/// +------------+---------+--------------------------+
+/// | 0..4       | 4       | 5..37                    |
+/// +------------+---------+--------------------------+
+/// | magic      | version | R (32 bytes)             |
+/// +------------+---------+--------------------------+
+/// 
+pub fn parse_umbra_memo(raw: &[u8]) -> Result<UmbraMemo, MemoDecodeError> {
+    const HEADER: usize = 4 + 1; // magic + version
+    const R_LEN: usize = 32;
+    const MIN: usize = HEADER + R_LEN;
+
+    if raw.len() < MIN {
+        return Err(MemoDecodeError::TooShort {
+            expected: MIN,
+            actual: raw.len(),
+        });
+    }
+
+    let (magic, rest) = raw.split_at(4);
+    if magic != UMBRA_MEMO_MAGIC {
+        return Err(MemoDecodeError::InvalidMagic);
+    }
+
+    let (&version, rest) = rest.split_first().unwrap(); // length guaranteed
+
+    if version != UMBRA_MEMO_VERSION {
+        return Err(MemoDecodeError::UnsupportedVersion(version));
+    }
+
+    let (r_bytes, _) = rest.split_at(R_LEN);
+
+    let mut arr = [0u8; 32];
+    arr.copy_from_slice(r_bytes);
+
+    let r = PointWrapper::from_bytes(arr).ok_or(MemoDecodeError::InvalidEphemeralPubkey)?;
+
+    Ok(UmbraMemo {
+        version,
+        ephemeral_pubkey: r,
+    })
+}
