@@ -1,6 +1,19 @@
 [package]
 name = "umbra-sweep"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+license = "MIT"
 
 [dependencies]
+umbra-core = { path = "../umbra-core" }
+
+solana-sdk = "3.0.0"
+thiserror = "2.0.17"
+sha2 = "0.10.9"
+curve25519-dalek = "4.1.3"
+zeroize = "1.8.2"
+solana-system-interface = { version = "3.0.0", features = ["bincode"] }
+solana-program = "3.0.0"
+[dev-dependencies]
+solana-client = "3.0.0"
+rand_core = { version = "0.6", features = ["getrandom"] }
