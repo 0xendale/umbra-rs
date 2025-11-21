@@ -1,6 +1,21 @@
 [package]
 name = "umbra-api"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
+umbra-core = { path = "../umbra-core" }
+umbra-rpc = { path = "../umbra-rpc" }
+umbra-sweep = { path = "../umbra-sweep" }
+umbra-storage = { path = "../umbra-storage" }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+tracing = { workspace = true, optional = true }
+
+[features]
+default = []
+logging = ["tracing"]

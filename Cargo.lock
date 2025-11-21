@@ -5076,7 +5076,19 @@ checksum = "784e0ac535deb450455cbfa28a6f0df145ea1bb7ae51b821cf5e7927fdcfbdd0"
 dependencies = [
  "log",
  "pin-project-lite",
+ "tracing-attributes",
  "tracing-core",
+]
+
+[[package]]
+name = "tracing-attributes"
+version = "0.1.30"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81383ab64e72a7a8b8e13130c49e3dab29def6d0c7d76a03087b3cf71c5c6903"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.110",
 ]
 
 [[package]]
@@ -5121,22 +5133,80 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "562d481066bde0658276a35467c4af00bdc6ee726305698a55b86e61d7ad82bb"
 
 [[package]]
-name = "umbra-api"
+name = "umbra"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bs58",
+ "curve25519-dalek",
+ "rand_core 0.6.4",
+ "serde",
+ "serde_json",
+ "sha2",
+ "solana-client",
+ "solana-sdk",
+ "solana-system-interface 3.0.0",
+ "solana-transaction-status",
+ "thiserror 2.0.17",
+ "tracing",
+ "umbra-api",
+ "umbra-client",
+ "umbra-core",
+ "umbra-rpc",
+ "umbra-storage",
+ "umbra-sweep",
+ "zeroize",
+]
 
 [[package]]
-name = "umbra-cli"
+name = "umbra-api"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+ "tracing",
+ "umbra-core",
+ "umbra-rpc",
+ "umbra-storage",
+ "umbra-sweep",
+]
+
+[[package]]
+name = "umbra-client"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "curve25519-dalek",
+ "rand_core 0.6.4",
+ "serde",
+ "serde_json",
+ "solana-client",
+ "solana-sdk",
+ "solana-system-interface 3.0.0",
+ "solana-transaction-status",
+ "thiserror 2.0.17",
+ "tracing",
+ "umbra-core",
+ "umbra-rpc",
+ "umbra-storage",
+ "umbra-sweep",
+ "zeroize",
+]
 
 [[package]]
 name = "umbra-core"
 version = "0.1.0"
 dependencies = [
+ "bs58",
  "curve25519-dalek",
  "rand_core 0.6.4",
  "serde",
+ "serde_json",
  "sha2",
  "thiserror 2.0.17",
+ "tracing",
  "zeroize",
 ]
 
@@ -5145,30 +5215,48 @@ name = "umbra-rpc"
 version = "0.1.0"
 dependencies = [
  "bs58",
+ "curve25519-dalek",
  "serde",
+ "serde_json",
+ "sha2",
+ "solana-client",
  "solana-sdk",
+ "solana-system-interface 3.0.0",
  "solana-transaction-status",
  "thiserror 2.0.17",
+ "tracing",
  "umbra-core",
 ]
 
 [[package]]
 name = "umbra-storage"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+ "tracing",
+]
 
 [[package]]
 name = "umbra-sweep"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "curve25519-dalek",
  "rand_core 0.6.4",
+ "serde",
+ "serde_json",
  "sha2",
  "solana-client",
- "solana-program",
  "solana-sdk",
  "solana-system-interface 3.0.0",
+ "solana-transaction-status",
  "thiserror 2.0.17",
+ "tracing",
  "umbra-core",
+ "umbra-rpc",
  "zeroize",
 ]
 

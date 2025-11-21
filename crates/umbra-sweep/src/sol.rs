@@ -1,10 +1,22 @@
-use solana_sdk::{instruction::Instruction, message::Message, transaction::Transaction};
+use solana_sdk::{instruction::Instruction, message::Message, pubkey::Pubkey, transaction::Transaction};
 
 use solana_system_interface::instruction::transfer;
 
-use crate::{SweepSolError, SweepSolParams};
+use crate::{SweepSolError, derivation::ScalarSigner};
 
 pub const MIN_REMAINING_LAMPORTS: u64 = 1_000_000;
+
+/// Parameters required to build a SOL sweep transaction.
+pub struct SweepSolParams<'a> {
+    /// Ephemeral private-key signer derived from scalar
+    pub signer: &'a ScalarSigner,
+    /// Recipient of the swept funds
+    pub to: Pubkey,
+    /// Amount of lamports to sweep
+    pub amount: u64,
+    /// Recent blockhash to sign transaction with
+    pub recent_blockhash: solana_sdk::hash::Hash,
+}
 
 /// Build and sign sweep transaction using scalar-based Ed25519 signer.
 pub fn build_and_sign_sweep_sol_transaction(

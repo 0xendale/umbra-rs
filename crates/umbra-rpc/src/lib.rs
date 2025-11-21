@@ -14,9 +14,14 @@
 //! - sweep funds if ownership is proven.
 
 pub mod memo;
+pub mod ownership;
 pub mod scanner;
+pub mod slot_scanner;
+pub mod slot_scanner_ui;
 pub mod types;
 
 pub use memo::{parse_umbra_memo, MemoDecodeError};
 pub use scanner::{extract_candidate_from_ui_transaction, ScannerError};
+pub use slot_scanner::{scan_slot_for_candidates, SlotScanError};
+pub use slot_scanner_ui::{fetch_ui_transactions_for_slot_range, SlotTransaction};
 pub use types::{CandidateOutput, UmbraMemo};

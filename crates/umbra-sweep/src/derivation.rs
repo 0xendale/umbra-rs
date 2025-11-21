@@ -6,7 +6,7 @@ use umbra_core::ScalarWrapper;
 
 /// Allows deriving an Ed25519 keypair deterministically from a scalar.
 /// Used to sign sweep transactions in Umbra.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ScalarSigner {
     secret: Scalar,
     public: EdwardsPoint,
